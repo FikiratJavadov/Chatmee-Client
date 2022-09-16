@@ -1,6 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
+import { useChat } from "../../store/chat";
+import { useParams } from "react-router-dom";
 
 const ChatFooter = () => {
+  const [value, setValue] = useState("");
+  const sendMessage = useChat((state) => state.sendMessage);
+  const chatId = useParams().id;
+
+  const sendMessageHandler = () => {
+    if (!value) return;
+    sendMessage({ content: value, chat: chatId });
+    setValue("");
+  };
+
   return (
     <div className="border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
       <div className="relative flex">
@@ -26,7 +38,9 @@ const ChatFooter = () => {
           </button>
         </span>
         <input
+          onChange={(e) => setValue(e.target.value)}
           type="text"
+          value={value}
           placeholder="Write your message!"
           className="w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-12 bg-gray-200 rounded-md py-3"
         />
@@ -95,6 +109,7 @@ const ChatFooter = () => {
             </svg>
           </button>
           <button
+            onClick={sendMessageHandler}
             type="button"
             className="inline-flex items-center justify-center rounded-lg px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-500 hover:bg-blue-400 focus:outline-none"
           >

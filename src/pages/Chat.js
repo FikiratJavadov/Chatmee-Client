@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useChat } from "../store/chat";
+import { useAuth } from "../store/auth";
 import UserList from "../components/UserList";
 import { Outlet } from "react-router-dom";
 
@@ -13,6 +14,8 @@ const Chat = () => {
   const searchMode = useChat((state) => state.searchMode);
   const SearchModeToggle = useChat((state) => state.SearchModeToggle);
 
+  const logout = useAuth((state) => state.logout);
+
   useEffect(() => {
     getAllChats();
   }, [getAllChats]);
@@ -20,8 +23,21 @@ const Chat = () => {
   return (
     <div className="bg-gray-50 w-screen h-screen sm:p-5">
       <div className="bg-white border border-gray-200 rounded flex h-full">
-        <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 h-full">
+        <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 h-full relative">
           <div className="border-b border-gray-200 p-3 relative">
+            <svg
+              width="25px"
+              onClick={logout}
+              height="25px"
+              className="absolute cursor-pointer"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g>
+                <path fill="none" d="M0 0h24v24H0z" />
+                <path d="M4 18h2v2h12V4H6v2H4V3a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3zm2-7h7v2H6v3l-5-4 5-4v3z" />
+              </g>
+            </svg>
             <button className="flex items-center mx-auto select-none font-semibold focus:outline-none">
               neysidev {counter}
               <svg

@@ -15,10 +15,9 @@ const Login = () => {
     formState: { errors },
   } = useForm({ resolver: yupResolver(loginSchema) });
 
-  console.log(auth);
-
   //* Log in
-  const onSubmit = async (data) => {
+  const onSubmit = async (data, e) => {
+    console.log(data);
     try {
       await auth.login(data);
       navigate("/chat", { replace: true });

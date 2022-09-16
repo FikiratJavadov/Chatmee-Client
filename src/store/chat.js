@@ -11,6 +11,7 @@ export const useChat = create(
     searchMode: false,
     users: [],
     messages: [],
+    currentChat: null,
 
     getAllChats: async () => {
       const { data } = await axios.get("/chat/");
@@ -38,9 +39,16 @@ export const useChat = create(
     },
 
     getAllMessages: async (chatId) => {
+      set({ loading: true });
       const { data } = await axios.get(`/message/${chatId}`);
       if (!data.success) throw new Error("Problem with getting all chats!");
-      set({ messages: data?.data?.messages });
+      set({ messages: data?.data?.messages, loading: false });
+    },
+
+    sendMessage: async (messagePayload) => {
+      const { data } = await axios.post(`/message`, messagePayload);
+      if (!data.success) throw new Error("Problem with sending message!");
+      set((state) => ({ messages: [...state.messages, data?.data?.message] }));
     },
 
     SearchModeOn: () => {

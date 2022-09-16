@@ -1,7 +1,11 @@
 import React from "react";
 import SingleChat from "./SingleChat";
+import { useChat } from "../store/chat";
 
 const ChatList = ({ chats }) => {
+ 
+
+
   return (
     <>
       <div className="flex items-center justify-between text-sm border-b border-gray-200">

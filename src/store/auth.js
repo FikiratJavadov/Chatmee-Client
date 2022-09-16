@@ -22,4 +22,14 @@ export const useAuth = create((set) => ({
     localStorage.setItem("auth", JSON.stringify(data?.data));
     set({ in: true, token: data.data.token, user: data.data.user });
   },
+
+  logout: () => {
+    set({
+      in: false,
+      user: null,
+      token: "",
+    });
+
+    localStorage.removeItem("auth");
+  },
 }));
