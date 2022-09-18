@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
 const SingleChat = ({ chat }) => {
-  const onlineUsers = useSocket((state) => state.onlineUsers);
+  // const onlineUsers = useSocket((state) => state.onlineUsers);
 
   const me = useAuth((state) => state.user);
   const loading = useChat((state) => state.loading);
@@ -16,12 +16,12 @@ const SingleChat = ({ chat }) => {
 
   const selected = chatId === chat?._id;
 
-  const typignUsers = Object.values(onlineUsers);
-  const friend = showChatName(me, chat.users);
+  // const typignUsers = Object.values(onlineUsers);
+  // const friend = showChatName(me, chat.users);
 
-  const typingChatUser = typignUsers.find((tu) => tu.id === friend._id);
-  const typingStatus = typingChatUser ? typingChatUser?.typing : false;
-  console.log(typingStatus);
+  // const typingChatUser = typignUsers.find((tu) => tu.id === friend._id);
+  // const typingStatus = typingChatUser ? typingChatUser?.typing : false;
+  // console.log(typingStatus);
 
   return (
     <li className={`${loading && "pointer-events-none"}`}>
@@ -39,9 +39,7 @@ const SingleChat = ({ chat }) => {
 
           <div className="transform translate-y-0.5 text-left">
             <h3 className="leading-4">{showChatName(me, chat?.users).name}</h3>
-            <span className="text-xs text-gray-500">
-              {typingStatus ? "Typing..." : "Active 20s ago"}
-            </span>
+            <span className="text-xs text-gray-500">Active 20s ago</span>
           </div>
         </button>
       </Link>
