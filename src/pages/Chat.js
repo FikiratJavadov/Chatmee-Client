@@ -1,24 +1,67 @@
 import React, { useEffect } from "react";
 import { useChat } from "../store/chat";
 import { useAuth } from "../store/auth";
-import UserList from "../components/UserList";
+import { useSocket } from "../store/socket";
 import { Outlet } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import ChatList from "../components/ChatList";
+import UserList from "../components/UserList";
+
+import io from "socket.io-client";
+
+//* Socket init:
 
 const Chat = () => {
+  const chatId = useParams().id;
+
   const getAllChats = useChat((state) => state.getAllChats);
   const counter = useChat((state) => state.counter);
   const increment = useChat((state) => state.increment);
   const chats = useChat((state) => state.chats);
   const searchMode = useChat((state) => state.searchMode);
+  const setMessage = useChat((state) => state.setMessage);
   const SearchModeToggle = useChat((state) => state.SearchModeToggle);
-
   const logout = useAuth((state) => state.logout);
+  const user = useAuth((state) => state.user);
+
+  const socket = useSocket((state) => state.socket);
+  const connected = useSocket((state) => state.socket);
+  const setConnected = useSocket((state) => state.setConnected);
+  const setSocket = useSocket((state) => state.setSocket);
+
+  //*Scoket io state
 
   useEffect(() => {
     getAllChats();
   }, [getAllChats]);
+
+  useEffect(() => {
+    const newSocket = io("http://localhost:5000");
+    setSocket(newSocket);
+    newSocket.on("connect", () => {
+      console.log("Client connected");
+      newSocket.emit("user-access", user);
+
+      newSocket.on("access-ok", (name) => {
+        console.log(`Client connected with a name: ${name}`);
+        setConnected();
+      });
+    });
+
+    return () => newSocket.close();
+  }, [setSocket, setConnected, user]);
+
+  useEffect(() => {
+    if (!connected) return;
+
+    socket.on("got-message", (message) => {
+      console.log(message);
+      if (message.chat._id === chatId) {
+        setMessage(message);
+      }
+    });
+  }, [connected, socket, chatId, setMessage]);
 
   return (
     <div className="bg-gray-50 w-screen h-screen sm:p-5">

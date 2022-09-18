@@ -1,6 +1,7 @@
 import create from "zustand";
 import axios from "../api/axios";
 import { devtools } from "zustand/middleware";
+import { useSocket } from "./socket";
 
 export const useChat = create(
   devtools((set, get) => ({
@@ -48,8 +49,18 @@ export const useChat = create(
     sendMessage: async (messagePayload) => {
       const { data } = await axios.post(`/message`, messagePayload);
       if (!data.success) throw new Error("Problem with sending message!");
+
+      //* Socket send message
+      const socket = useSocket.getState().socket;
+      socket.emit("send-message", data?.data?.message);
+
       set((state) => ({ messages: [...state.messages, data?.data?.message] }));
     },
+
+
+    setMessage: (message) => set((state) => ({messages: [...state.messages, message]})),
+
+
 
     SearchModeOn: () => {
       set((state) => ({ searchMode: true }));
