@@ -29,6 +29,8 @@ const Chat = () => {
   const connected = useSocket((state) => state.socket);
   const setConnected = useSocket((state) => state.setConnected);
   const setSocket = useSocket((state) => state.setSocket);
+  const onlineUsers = useSocket((state) => state.onlineUsers);
+  const setOnlineUsers = useSocket((state) => state.setOnlineUsers);
 
   //*Scoket io state
 
@@ -48,7 +50,6 @@ const Chat = () => {
         setConnected();
       });
     });
-
     return () => newSocket.close();
   }, [setSocket, setConnected, user]);
 
@@ -56,12 +57,21 @@ const Chat = () => {
     if (!connected) return;
 
     socket.on("got-message", (message) => {
-      console.log(message);
       if (message.chat._id === chatId) {
+        console.log("run");
         setMessage(message);
       }
     });
-  }, [connected, socket, chatId, setMessage]);
+  }, [connected, socket, setMessage]);
+
+  useEffect(() => {
+    if (!connected) return;
+
+    socket.on("online-status", (users) => {
+      console.log(users);
+      setOnlineUsers(users);
+    });
+  }, [connected, socket, setOnlineUsers]);
 
   return (
     <div className="bg-gray-50 w-screen h-screen sm:p-5">

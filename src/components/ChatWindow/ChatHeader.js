@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useChat } from "../../store/chat";
 import { useAuth } from "../../store/auth";
+import { useSocket } from "../../store/socket";
 import { useParams } from "react-router-dom";
 import { showChatName } from "../../helper";
 
@@ -10,6 +11,9 @@ const ChatHeader = () => {
   const me = useAuth((state) => state.user);
   const currentChat = chats.find((c) => c._id === chatId);
   const friend = showChatName(me, currentChat?.users);
+  const onlineUsers = useSocket((state) => state.onlineUsers);
+  const usersStatus = Object.values(onlineUsers).map((u) => u.id);
+  const isOnline = Object.values(usersStatus).includes(friend?._id);
 
   return (
     <div className="flex sm:items-center justify-between py-3 border-b-2 border-gray-200">
@@ -17,7 +21,12 @@ const ChatHeader = () => {
         <div className="relative">
           <span className="absolute text-green-500 right-0 bottom-0">
             <svg width="20" height="20">
-              <circle cx="8" cy="8" r="8" fill="currentColor"></circle>
+              <circle
+                cx="8"
+                cy="8"
+                r="8"
+                fill={`${isOnline ? "currentColor" : "red"}`}
+              ></circle>
             </svg>
           </span>
           <img
@@ -30,7 +39,9 @@ const ChatHeader = () => {
           <div className="text-2xl mt-1 flex items-center">
             <span className="text-gray-700 mr-3">{friend?.name}</span>
           </div>
-          <span className="text-lg text-gray-600">Junior Developer</span>
+          <span className="text-gray-600 text-left text-sm">
+            {isOnline ? "online" : "offline"}
+          </span>
         </div>
       </div>
       <div className="flex items-center space-x-2">

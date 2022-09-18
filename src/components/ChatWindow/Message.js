@@ -1,13 +1,19 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { amISender } from "../../helper";
 import { useAuth } from "../../store/auth";
 
 const Message = ({ message }) => {
+  const messageRef = useRef(null);
+
   const me = useAuth((state) => state.user);
   const whoIsSender = amISender(me, message);
 
+  useEffect(() => {
+    messageRef.current.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
   return (
-    <div className="chat-message">
+    <div ref={messageRef} className="chat-message">
       <div className={`flex items-end ${!whoIsSender && "justify-end"}`}>
         <div className="flex flex-col space-y-2 text-xs max-w-xs mx-2 order-2 items-start">
           <div>

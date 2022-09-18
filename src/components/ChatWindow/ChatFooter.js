@@ -1,17 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useChat } from "../../store/chat";
 import { useParams } from "react-router-dom";
+import { useSocket } from "../../store/socket";
+import { useAuth } from "../../store/auth";
+import useDebounce from "../../hooks/useDebounce";
 
-const ChatFooter = () => {
+const ChatFooter = ({ chatBodyRef }) => {
   const [value, setValue] = useState("");
+  const debouncedValue = useDebounce(value, 2000);
+
+  const socket = useSocket((state) => state.socket);
   const sendMessage = useChat((state) => state.sendMessage);
   const chatId = useParams().id;
+
+  const user = useAuth((state) => state.user);
+
+  const [startTyping, setStartTyping] = useState(false);
 
   const sendMessageHandler = () => {
     if (!value) return;
     sendMessage({ content: value, chat: chatId });
     setValue("");
+    console.log(chatBodyRef.current);
   };
+
+  useEffect(() => {
+    if (!startTyping || !socket) return;
+
+    socket.emit("typing", user);
+  }, [socket, startTyping]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    setStartTyping(false);
+    socket.emit("stop-typing");
+  }, [debouncedValue, socket]);
 
   return (
     <div className="border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
@@ -38,7 +62,10 @@ const ChatFooter = () => {
           </button>
         </span>
         <input
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => {
+            setStartTyping(true);
+            setValue(e.target.value);
+          }}
           type="text"
           value={value}
           placeholder="Write your message!"

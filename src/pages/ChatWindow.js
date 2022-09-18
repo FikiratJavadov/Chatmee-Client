@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useChat } from "../store/chat";
 import { useParams } from "react-router-dom";
 
@@ -7,6 +7,8 @@ import ChatBody from "../components/ChatWindow/ChatBody";
 import ChatFooter from "../components/ChatWindow/ChatFooter";
 
 const ChatWindow = () => {
+  const chatBodyRef = useRef(null);
+
   const getAllMessages = useChat((state) => state.getAllMessages);
   const chatId = useParams().id;
 
@@ -17,8 +19,8 @@ const ChatWindow = () => {
   return (
     <div className="flex-1 p:2 sm:p-6 justify-between flex flex-col h-screen">
       <ChatHeader />
-      <ChatBody />
-      <ChatFooter />
+      <ChatBody ref={chatBodyRef} />
+      <ChatFooter chatBodyRef={chatBodyRef} />
     </div>
   );
 };

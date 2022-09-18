@@ -8,7 +8,9 @@ export const useSocket = create(
     loading: false,
     error: null,
     connected: false,
+    onlineUsers: {},
     setSocket: (socket) => set({ socket }),
     setConnected: () => set({ connected: true }),
+    setOnlineUsers: (newOnlineUsers) => set({ onlineUsers: newOnlineUsers }),
   }))
 );
