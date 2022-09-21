@@ -21,7 +21,6 @@ const ChatFooter = ({ chatBodyRef }) => {
     if (!value) return;
     sendMessage({ content: value, chat: chatId });
     setValue("");
-    console.log(chatBodyRef.current);
   };
 
   useEffect(() => {
@@ -42,6 +41,10 @@ const ChatFooter = ({ chatBodyRef }) => {
     };
   }, [socket, chatId, setIsTyping]);
 
+  window.onbeforeunload = function () {
+    socket.emit("stop-typing", chatId);
+  };
+
   useEffect(() => {
     let timerId;
 
@@ -49,7 +52,7 @@ const ChatFooter = ({ chatBodyRef }) => {
       timerId = setTimeout(() => {
         setTyping(false);
         socket.emit("stop-typing", chatId);
-      }, 3000);
+      }, 5000);
     }
 
     return () => {

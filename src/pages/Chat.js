@@ -37,7 +37,9 @@ const Chat = () => {
   }, [getAllChats]);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:5000");
+    const newSocket = io.connect("http://localhost:5000", {
+      "sync disconnect on unload": true,
+    });
     setSocket(newSocket);
     newSocket.on("connect", () => {
       console.log("Client connected");
@@ -48,18 +50,16 @@ const Chat = () => {
         setConnected();
       });
     });
-    return () => newSocket.close();
+    return () => {
+      newSocket.close();
+      newSocket.disconnect("hello");
+    };
   }, [setSocket, setConnected, user]);
 
   useEffect(() => {
-    //! Error when changin friend chat and send him messag he get 2 time and even more.
-    //! I think it store function call in queue in every chatId change which triggers useEffect.
-    //! Need to solve this problem.
+    
 
     if (!connected) return;
-
-    console.log("new run");
-
     const sendMessageCallback = (message) => {
       console.log("this is kind", message);
       console.log("got-message", message.chat._id, chatId);
@@ -79,7 +79,7 @@ const Chat = () => {
     return () => {
       socket.off("got-message", sendMessageCallback);
     };
-  }, [connected, socket, setMessage, chatId]);
+  }, [connected, socket, setMessage, chatId, raiseTheChat]);
 
   useEffect(() => {
     if (!connected) return;
