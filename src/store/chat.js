@@ -27,16 +27,18 @@ export const useChat = create(
     },
 
     //* Access chhat
-    accessChat: async (friendId) => {
+    accessChat: async (friendId, navigate) => {
       const { data } = await axios.post("/chat", { friendId });
       if (!data.success) throw new Error("Problem with selecting chats!");
 
       const oldChat = get().chats.find((c) => c._id === data?.data?.chat._id);
-      if (oldChat) return;
+      if (oldChat) return navigate(`/chat/${oldChat?._id}`);
 
       set((state) => {
         return { chats: [data?.data?.chat, ...state.chats] };
       });
+
+      navigate(`/chat/${data?.data?.chat?._id}`);
     },
 
     getAllMessages: async (chatId) => {
@@ -44,6 +46,15 @@ export const useChat = create(
       const { data } = await axios.get(`/message/${chatId}`);
       if (!data.success) throw new Error("Problem with getting all chats!");
       set({ messages: data?.data?.messages, loading: false });
+    },
+
+    raiseTheChat: (message) => {
+      const allChats = [...get().chats];
+      const index = allChats.findIndex((c) => c._id === message.chat._id);
+      allChats.splice(index, 1);
+      allChats.unshift(message.chat);
+
+      set({ chats: allChats });
     },
 
     sendMessage: async (messagePayload) => {
@@ -54,13 +65,21 @@ export const useChat = create(
       const socket = useSocket.getState().socket;
       socket.emit("send-message", data?.data?.message);
 
-      set((state) => ({ messages: [...state.messages, data?.data?.message] }));
+      const allChats = [...get().chats];
+      const index = allChats.findIndex(
+        (c) => c._id === data?.data?.message.chat._id
+      );
+      allChats.splice(index, 1);
+      allChats.unshift(data?.data?.message.chat);
+
+      set((state) => ({
+        messages: [...state.messages, data?.data?.message],
+        chats: allChats,
+      }));
     },
 
-
-    setMessage: (message) => set((state) => ({messages: [...state.messages, message]})),
-
-
+    setMessage: (message) =>
+      set((state) => ({ messages: [...state.messages, message] })),
 
     SearchModeOn: () => {
       set((state) => ({ searchMode: true }));

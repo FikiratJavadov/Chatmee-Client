@@ -16,9 +16,8 @@ const Chat = () => {
   const chatId = useParams().id;
 
   const getAllChats = useChat((state) => state.getAllChats);
-  const counter = useChat((state) => state.counter);
-  const increment = useChat((state) => state.increment);
   const chats = useChat((state) => state.chats);
+  const raiseTheChat = useChat((state) => state.raiseTheChat);
   const searchMode = useChat((state) => state.searchMode);
   const setMessage = useChat((state) => state.setMessage);
   const SearchModeToggle = useChat((state) => state.SearchModeToggle);
@@ -29,7 +28,6 @@ const Chat = () => {
   const connected = useSocket((state) => state.socket);
   const setConnected = useSocket((state) => state.setConnected);
   const setSocket = useSocket((state) => state.setSocket);
-  const onlineUsers = useSocket((state) => state.onlineUsers);
   const setOnlineUsers = useSocket((state) => state.setOnlineUsers);
 
   //*Scoket io state
@@ -63,6 +61,7 @@ const Chat = () => {
     console.log("new run");
 
     const sendMessageCallback = (message) => {
+      console.log("this is kind", message);
       console.log("got-message", message.chat._id, chatId);
       if (message.chat._id === chatId) {
         console.log("here");
@@ -71,6 +70,8 @@ const Chat = () => {
       } else {
         console.log("Give notification 🔥 ");
       }
+
+      raiseTheChat(message);
     };
 
     socket.on("got-message", sendMessageCallback);
@@ -108,9 +109,8 @@ const Chat = () => {
               </g>
             </svg>
             <button className="flex items-center mx-auto select-none font-semibold focus:outline-none">
-              neysidev {counter}
+              {user?.name}
               <svg
-                onClick={increment}
                 className="ml-1 transform rotate-180 translate-y-0.5"
                 height="20"
                 viewBox="0 0 48 48"
