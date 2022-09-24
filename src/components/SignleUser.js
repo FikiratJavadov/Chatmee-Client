@@ -2,6 +2,8 @@ import React from "react";
 import { useChat } from "../store/chat";
 import { useNavigate } from "react-router-dom";
 
+import { motion } from "framer-motion";
+
 const SignleUser = ({ user }) => {
   const accessChat = useChat((state) => state.accessChat);
   const SearchModeOff = useChat((state) => state.SearchModeOff);
@@ -14,7 +16,12 @@ const SignleUser = ({ user }) => {
   };
 
   return (
-    <li onClick={accessChatHandler}>
+    <motion.li
+      animate={{ opacity: 1 }}
+      layout
+      initial={{ opacity: 0 }}
+      onClick={accessChatHandler}
+    >
       <button className="flex items-center w-full px-4 py-2 select-none hover:bg-gray-100 focus:outline-none">
         <img
           className="w-12 h-12 mr-3 rounded-full border object-cover"
@@ -26,7 +33,7 @@ const SignleUser = ({ user }) => {
           <span className="text-xs text-gray-500">online</span>
         </div>
       </button>
-    </li>
+    </motion.li>
   );
 };
 

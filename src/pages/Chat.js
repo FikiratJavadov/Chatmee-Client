@@ -5,6 +5,10 @@ import { useSocket } from "../store/socket";
 import { Outlet } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
+import { AnimatePresence } from "framer-motion";
+
+import { useBeforeunload } from "react-beforeunload";
+
 import ChatList from "../components/ChatList";
 import UserList from "../components/UserList";
 
@@ -32,6 +36,10 @@ const Chat = () => {
 
   //*Scoket io state
 
+  useBeforeunload((event) => {
+    socket.emit("stop-typing", chatId);
+  });
+
   useEffect(() => {
     getAllChats();
   }, [getAllChats]);
@@ -57,17 +65,12 @@ const Chat = () => {
   }, [setSocket, setConnected, user]);
 
   useEffect(() => {
-    
-
     if (!connected) return;
     const sendMessageCallback = (message) => {
-      console.log("this is kind", message);
-      console.log("got-message", message.chat._id, chatId);
       if (message.chat._id === chatId) {
-        console.log("here");
-        console.log(chatId);
         setMessage(message);
       } else {
+        //Todo Make an http PATCH request to change chat unread count;
         console.log("Give notification 🔥 ");
       }
 
@@ -85,10 +88,14 @@ const Chat = () => {
     if (!connected) return;
 
     socket.on("online-status", (users) => {
-      console.log(users);
       setOnlineUsers(users);
     });
   }, [connected, socket, setOnlineUsers]);
+
+  const logoutHandler = () => {
+    socket.emit("stop-typing", chatId);
+    logout();
+  };
 
   return (
     <div className="bg-gray-50 w-screen h-screen sm:p-5">
@@ -97,7 +104,7 @@ const Chat = () => {
           <div className="border-b border-gray-200 p-3 relative">
             <svg
               width="25px"
-              onClick={logout}
+              onClick={logoutHandler}
               height="25px"
               className="absolute cursor-pointer"
               viewBox="0 0 24 24"
@@ -131,7 +138,11 @@ const Chat = () => {
             </button>
           </div>
 
-          {searchMode ? <UserList /> : <ChatList chats={chats} />}
+          {searchMode ? (
+            <UserList key="userlist" />
+          ) : (
+            <ChatList key="chatlist" chats={chats} />
+          )}
         </div>
 
         <div className="hidden sm:w-1/2 md:w-2/3 lg:w-3/4 border-l border-gray-200 sm:flex items-center justify-center text-center">

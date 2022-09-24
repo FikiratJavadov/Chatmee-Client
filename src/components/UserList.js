@@ -3,6 +3,8 @@ import { useChat } from "../store/chat";
 import useDebounce from "../hooks/useDebounce";
 import SignleUser from "./SignleUser";
 
+import { AnimatePresence } from "framer-motion";
+
 const UserList = () => {
   const [value, setValue] = useState("");
   const debouncedValue = useDebounce(value, 500);
@@ -18,7 +20,7 @@ const UserList = () => {
   }, [debouncedValue, searchUsers, searchMode]);
 
   return (
-    <>
+    <div className="flex flex-col h-[600px] ">
       <form className="flex items-center justify-between text-sm border-b border-gray-200">
         <input
           onChange={(e) => setValue(e.target.value)}
@@ -27,12 +29,14 @@ const UserList = () => {
         />
       </form>
 
-      <ul className="py-1 overflow-auto">
-        {users.map((user) => (
-          <SignleUser key={user._id} user={user} />
-        ))}
+      <ul className="py-1 overflow-auto h-full">
+        <AnimatePresence>
+          {users.map((user) => (
+            <SignleUser key={user._id} user={user} />
+          ))}
+        </AnimatePresence>
       </ul>
-    </>
+    </div>
   );
 };
 

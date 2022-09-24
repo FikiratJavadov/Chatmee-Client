@@ -17,7 +17,7 @@ const ChatHeader = () => {
 
   const isTyping = useSocket((state) => state.isTyping);
 
-  console.log("typing", isTyping);
+  
 
   return (
     <div className="flex sm:items-center justify-between py-3 border-b-2 border-gray-200">

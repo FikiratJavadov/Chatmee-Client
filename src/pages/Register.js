@@ -29,7 +29,6 @@ const Register = () => {
   };
 
   const onImageSelect = (e) => {
-    console.log("hello");
     const reader = new FileReader();
     reader.readAsDataURL(e.target.files[0]);
     reader.onloadend = () => {

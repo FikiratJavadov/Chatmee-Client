@@ -17,14 +17,11 @@ const Login = () => {
 
   //* Log in
   const onSubmit = async (data, e) => {
-    console.log(data);
     try {
       await auth.login(data);
       navigate("/chat", { replace: true });
       reset();
-    } catch (error) {
-      console.log("Log in", error.message);
-    }
+    } catch (error) {}
   };
 
   return (

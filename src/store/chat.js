@@ -7,6 +7,7 @@ export const useChat = create(
   devtools((set, get) => ({
     chats: [],
     loading: false,
+    getMessagesLoading: false,
     error: null,
     counter: 0,
     searchMode: false,
@@ -15,9 +16,10 @@ export const useChat = create(
     currentChat: null,
 
     getAllChats: async () => {
+      set({ loading: true });
       const { data } = await axios.get("/chat/");
       if (!data.success) throw new Error("Problem with getting all the chats!");
-      set({ chats: data?.data?.chats });
+      set({ chats: data?.data?.chats, loading: false });
     },
 
     searchUsers: async (search) => {
@@ -42,10 +44,10 @@ export const useChat = create(
     },
 
     getAllMessages: async (chatId) => {
-      set({ loading: true });
+      set({ getMessagesLoading: true });
       const { data } = await axios.get(`/message/${chatId}`);
       if (!data.success) throw new Error("Problem with getting all chats!");
-      set({ messages: data?.data?.messages, loading: false });
+      set({ messages: data?.data?.messages, getMessagesLoading: false });
     },
 
     raiseTheChat: (message) => {

@@ -4,6 +4,6 @@ export const showChatName = (me, users) => {
 };
 
 export const amISender = (me, message) => {
-  if (me?._id === message?.sender?._id) return true;
-  return false;
+  if (me?._id === message?.sender?._id) return me;
+  return message?.sender;
 };
